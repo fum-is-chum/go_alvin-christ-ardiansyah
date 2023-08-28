@@ -24,7 +24,7 @@ func (s *student) Encode() string {
 		if char == 32 {
 			encodedName[i] = 32
 		} else {
-			encodedName[i] = 'a' + byte((int(char-'a')+13)%26)
+			encodedName[i] = 'a' + byte((25 - int(char-'a'))%26)
 		}
 	}
 	// your code here
@@ -41,7 +41,7 @@ func (s *student) Decode() string {
 		if char == 32 {
 			decodedName[i] = 32
 		} else {
-			decodedName[i] = 'a' + byte((int(char-'a')+13)%26)
+			decodedName[i] = 'a' + byte((25 - int(char-'a'))%26)
 		}
 	}
 	// your code here
