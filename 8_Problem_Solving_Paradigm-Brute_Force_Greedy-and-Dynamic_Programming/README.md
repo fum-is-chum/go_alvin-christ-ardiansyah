@@ -1,0 +1,4 @@
+## (8) Problem Solving Paradigm
+1. Problem Solving Paradigm yang umum dipakai adalah Brute Force, Divide & Conquer, Greedy dan Dynamic Programming
+2. Brute Force a.k.a Complete Search merupakan yang paling mudah untuk diimplementasi, namun biasanya adalah yang paling buruk dari sisi performa atau execution time. Divide & Conquer membagi masalah besar menjadi masalah-masalah yang lebih kecil lalu menyelesaikannya. Greedy yaitu mencari local optimal choice untuk mendapat global optimal choice.
+3. Dynamic Programming membagi masalah menjadi sub-masalah dan menggunakan konsep bahwa solusi optimal untuk sebuah masalah yaitu dengan mencari solusi optimal untuk setiap sub-masalahnya. Dibagi menjadi 2 approach, yaitu top-down (memoization) dan bottom-up (tabulation)
