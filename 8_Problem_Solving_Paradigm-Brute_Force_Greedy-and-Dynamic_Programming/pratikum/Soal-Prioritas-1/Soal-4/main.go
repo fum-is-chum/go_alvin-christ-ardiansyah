@@ -4,7 +4,7 @@ import "fmt"
 
 var memo map[int]bool
 
-/* Time Complexity O(n) */
+/* Time Complexity O(m) */
 func faktorBilangan(num int) (result []int) {
 	batas := num / 2
 	for i := 1; i <= batas; i++ {
@@ -17,12 +17,13 @@ func faktorBilangan(num int) (result []int) {
 }
 
 /*
+	Pendekatan bruteforce (optimized)
 	Time Complexity O(m + n^2)
 */
 func SimpleEquations(a, b, c int) {
 	var answer []int
 	// Cari faktor bilangan b
-	faktor := faktorBilangan(b)
+	faktor := faktorBilangan(b)  // x*y*z = b
 	lenFaktor := len(faktor)
 
 	answerFound := false
@@ -32,7 +33,7 @@ func SimpleEquations(a, b, c int) {
 			y := faktor[j]
 
 			// prediksi nilai z
-			z := a - (x + y)
+			z := a - (x + y) // x + y + z = a
 			_, exist := memo[z]
 			if !exist {
 				// jika z bukan faktor b
