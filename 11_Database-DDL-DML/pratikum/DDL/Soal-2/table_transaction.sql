@@ -1,0 +1,10 @@
+USE alta_online_shop;
+
+CREATE TABLE TRANSACTION (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	customer_id INT NOT NULL,
+	tanggal_transaksi DATETIME DEFAULT NOW(),
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP,
+	FOREIGN KEY (customer_id) REFERENCES user(id)
+);

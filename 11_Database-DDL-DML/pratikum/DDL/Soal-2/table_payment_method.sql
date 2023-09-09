@@ -1,0 +1,7 @@
+USE alta_online_shop;
+
+CREATE TABLE payment_method (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	NAME VARCHAR(255) NOT NULL,
+	deskripsi VARCHAR(255) NOT NULL
+);
