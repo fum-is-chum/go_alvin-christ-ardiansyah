@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ambil input command line argument 1
-folder_utama="$1 $(date)"
+folder_utama="$1 at $(date)"
 mkdir "$folder_utama" && cd "$folder_utama"
 
 # ambil input command line argument 2 dan 3
@@ -22,8 +22,5 @@ about_this_content="My username: $(uname -n) \nWith host: $(uname -srvmpio)"
 echo -e $about_this_content > my_system_info/about_this_laptop.txt
 
 # ping
-ping_info=$(sudo ping -c 3 google.com)
+ping_info=$(ping -c 3 google.com)
 echo -e $ping_info > my_system_info/internet_connection.txt
-
-
-
