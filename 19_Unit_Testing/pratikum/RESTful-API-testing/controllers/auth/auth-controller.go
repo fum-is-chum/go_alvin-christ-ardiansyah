@@ -10,14 +10,24 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func LoginController(c echo.Context) error {
+type AuthController struct {
+	repo repositories.UserRepository
+}
+
+func NewAuthController(ur repositories.UserRepository) *AuthController {
+	return &AuthController{
+		repo: ur,
+	}
+}
+
+func (ac *AuthController) LoginController(c echo.Context) error {
 	var loginReq = models.LoginRequest{}
 	errBind := c.Bind(&loginReq)
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(fmt.Sprintf("Error bind: %s", errBind.Error())))
 	}
 
-	data, token, err := repositories.CheckLogin(loginReq.Email, loginReq.Password)
+	data, token, err := ac.repo.CheckLogin(loginReq.Email, loginReq.Password)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(fmt.Sprintf("Error login: %s", err.Error())))
 	}

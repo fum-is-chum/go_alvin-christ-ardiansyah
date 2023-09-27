@@ -1,4 +1,4 @@
-package calculator
+package lib
 
 func Addition(a, b int) int {
 	return a + b

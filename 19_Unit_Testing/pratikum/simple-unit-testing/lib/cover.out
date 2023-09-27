@@ -1,0 +1,5 @@
+mode: set
+simple-unit-testing/lib/calculator/calculator.go:3.29,5.2 1 1
+simple-unit-testing/lib/calculator/calculator.go:7.32,9.2 1 1
+simple-unit-testing/lib/calculator/calculator.go:11.29,13.2 1 1
+simple-unit-testing/lib/calculator/calculator.go:15.29,17.2 1 1

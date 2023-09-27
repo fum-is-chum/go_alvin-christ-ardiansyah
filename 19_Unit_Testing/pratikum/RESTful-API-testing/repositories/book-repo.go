@@ -2,14 +2,25 @@ package repositories
 
 import (
 	"errors"
-	"restful-api-testing/config"
 	"restful-api-testing/models"
-)
 
-func SelectBooks() ([]models.Book, error) {
+	"gorm.io/gorm"
+)
+type BookRepository struct {
+	db *gorm.DB
+}
+
+func NewBookRepository(db *gorm.DB) *BookRepository {
+	return &BookRepository{
+		db: db,
+	}
+}
+
+
+func (br *BookRepository) SelectBooks() ([]models.Book, error) {
 	var books []models.Book
 
-	tx := config.DB.Order("created_at desc").Find(&books)
+	tx := br.db.Order("created_at desc").Find(&books)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
@@ -17,9 +28,9 @@ func SelectBooks() ([]models.Book, error) {
 	return books, nil
 }
 
-func SelectBookById(Id uint) (models.Book, error) {
+func (br *BookRepository) SelectBookById(Id uint) (models.Book, error) {
 	var book models.Book
-	tx := config.DB.First(&book, Id)
+	tx := br.db.First(&book, Id)
 	if tx.Error != nil {
 		return models.Book{}, tx.Error
 	}
@@ -27,30 +38,30 @@ func SelectBookById(Id uint) (models.Book, error) {
 	return book, nil
 }
 
-func InsertBook(book models.Book) error {
-	tx := config.DB.Create(&book)
+func (br *BookRepository) InsertBook(book models.Book) error {
+	tx := br.db.Create(&book)
 	if tx.Error != nil {
 		return errors.New("Insert book failed")
 	}
 	return nil
 }
 
-func DeleteBook(Id uint) error {
-	tx := config.DB.Delete(&models.Book{}, Id)
+func (br *BookRepository) DeleteBook(Id uint) error {
+	tx := br.db.Delete(&models.Book{}, Id)
 	if tx.Error != nil {
 		return errors.New("Delete book failed")
 	}
 	return nil
 }
 
-func UpdateBook(book models.Book) error {
+func (br *BookRepository) UpdateBook(book models.Book) error {
 	updatedBook := models.Book{
 		Title:     book.Title,
 		Author:    book.Author,
 		Publisher: book.Publisher,
 	}
 
-	tx := config.DB.Model(&models.Book{}).Where("id = ?", book.ID).Updates(updatedBook)
+	tx := br.db.Model(&models.Book{}).Where("id = ?", book.ID).Updates(updatedBook)
 	if tx.Error != nil {
 		return errors.New("Update book failed")
 	}

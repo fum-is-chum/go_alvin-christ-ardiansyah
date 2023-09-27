@@ -2,14 +2,12 @@ package config
 
 import (
 	"os"
+	"regexp"
 	"strconv"
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
-	"gorm.io/gorm"
 )
-
-var DB *gorm.DB
 
 type AppConfig struct {
 	SERVERPORT int
@@ -22,7 +20,7 @@ type AppConfig struct {
 
 func InitConfig() *AppConfig {
 	var res = new(AppConfig)
-	res = loadConfig()
+	res = loadConfig(".env")
 	if res == nil {
 		logrus.Fatal("Config: Cannot start program, failed to load configuration")
 		return nil
@@ -31,10 +29,27 @@ func InitConfig() *AppConfig {
 	return res
 }
 
-func loadConfig() *AppConfig {
+func InitConfigTest() *AppConfig {
 	var res = new(AppConfig)
 
-	err := godotenv.Load(".env")
+	const projectDirName = "RESTful-API-testing"
+	re := regexp.MustCompile(`^(.*` + projectDirName + `)`)
+	cwd, _ := os.Getwd()
+	rootPath := re.Find([]byte(cwd))
+	
+	res = loadConfig(string(rootPath) + "/.env.test")
+	if res == nil {
+		logrus.Fatal("Config: Cannot start program, failed to load configuration")
+		return nil
+	}
+
+	return res
+}
+
+func loadConfig(envPath string) *AppConfig {
+	var res = new(AppConfig)
+
+	err := godotenv.Load(envPath)
 
 	if err != nil {
 		logrus.Error("Config: Cannot load config file,", err.Error())

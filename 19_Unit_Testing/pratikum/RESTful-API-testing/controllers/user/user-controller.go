@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"restful-api-testing/helpers"
@@ -9,11 +10,22 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
+type UserController struct {
+	repo repositories.UserRepository
+}
+
+func NewUserController(ur repositories.UserRepository) *UserController {
+	return &UserController{
+		repo: ur,
+	}
+}
+
 // get all users
-func GetUsersController(c echo.Context) error {
-	users, err := repositories.SelectUsers()
+func (uc *UserController) GetUsersController(c echo.Context) error {
+	users, err := uc.repo.SelectUsers()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("Error on fetching users"))
 	}
@@ -33,20 +45,19 @@ func GetUsersController(c echo.Context) error {
 }
 
 // get user by id
-func GetUserController(c echo.Context) error {
+func (uc *UserController) GetUserController(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("Bad Request: Id invalid"))
 	}
 
 	// your solution here
-	user, err := repositories.SelectUserById(uint(id))
+	user, err := uc.repo.SelectUserById(uint(id))
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.JSON(http.StatusNotFound, helpers.FailedResponse("User not found"))
+		}
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(fmt.Sprintf("Error on fetching user with id %d", id)))
-	}
-
-	if user.ID == 0 {
-		return c.JSON(http.StatusNotFound, helpers.FailedResponse("User not found"))
 	}
 
 	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse(fmt.Sprintf("Sucess fetch user with id %d", id), models.UserResponse{
@@ -59,15 +70,14 @@ func GetUserController(c echo.Context) error {
 }
 
 // create new user
-
-func CreateUserController(c echo.Context) error {
+func (uc *UserController) CreateUserController(c echo.Context) error {
 	var newUser models.User
 	bindErr := c.Bind(&newUser)
 	if bindErr != nil {
 		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(fmt.Sprintf("Error bind %s", bindErr.Error())))
 	}
 
-	err := repositories.InsertUser(newUser)
+	err := uc.repo.InsertUser(newUser)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("Error insert user"))
 	}
@@ -76,15 +86,18 @@ func CreateUserController(c echo.Context) error {
 }
 
 // delete user by id
-func DeleteUserController(c echo.Context) error {
+func (uc *UserController) DeleteUserController(c echo.Context) error {
 	// your solution here
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("Bad Request: Id invalid"))
 	}
 
-	err = repositories.DeleteUser(uint(id))
+	err = uc.repo.DeleteUser(uint(id))
 	if err != nil {
+		if err.Error() == "User not found" {
+			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
+		}
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("Delete user failed"))
 	}
 
@@ -92,7 +105,7 @@ func DeleteUserController(c echo.Context) error {
 }
 
 // update user by id
-func UpdateUserController(c echo.Context) error {
+func (uc *UserController) UpdateUserController(c echo.Context) error {
 	// your solution here
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -106,9 +119,12 @@ func UpdateUserController(c echo.Context) error {
 	}
 
 	updateUser.ID = uint(id)
-	err = repositories.UpdateUser(updateUser)
+	err = uc.repo.UpdateUser(updateUser)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("Update user failed"))
+		if err.Error() == "User not found" {
+			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
+		}
+		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(fmt.Sprintf("Update user failed: %s", err.Error())))
 	}
 
 	return c.JSON(http.StatusOK, helpers.SuccessResponse("Success update user"))

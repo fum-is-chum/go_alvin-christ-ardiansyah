@@ -8,9 +8,9 @@ import (
 
 type Book struct {
 	gorm.Model
-	Title     string `json:"title" form:"title"`
-	Author    string `json:"author" form:"author"`
-	Publisher string `json:"publisher" form:"publisher"`
+	Title     string `json:"title" form:"title" gorm:"unique;not null;check:title <> ''"`
+	Author    string `json:"author" form:"author" gorm:"not null;check:author <> ''"`
+	Publisher string `json:"publisher" form:"publisher" gorm:"not null;check:publisher <>''"`
 }
 
 type BookResponse struct {

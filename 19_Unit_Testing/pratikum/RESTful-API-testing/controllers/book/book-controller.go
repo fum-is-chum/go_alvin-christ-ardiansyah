@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"restful-api-testing/helpers"
@@ -9,11 +10,22 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
+type BookController struct {
+	repo repositories.BookRepository
+}
+
+func NewBookController(br repositories.BookRepository) *BookController {
+	return &BookController{
+		repo: br,
+	}
+}
+
 // get all books
-func GetBooksController(c echo.Context) error {
-	books, err := repositories.SelectBooks()
+func (bc *BookController) GetBooksController(c echo.Context) error {
+	books, err := bc.repo.SelectBooks()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("Error on fetching books"))
 	}
@@ -34,20 +46,19 @@ func GetBooksController(c echo.Context) error {
 }
 
 // get book by id
-func GetBookController(c echo.Context) error {
+func (bc *BookController) GetBookController(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("Bad Request: Id invalid"))
 	}
 
 	// your solution here
-	book, err := repositories.SelectBookById(uint(id))
+	book, err := bc.repo.SelectBookById(uint(id))
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.JSON(http.StatusNotFound, helpers.FailedResponse("Book not found"))
+		}
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(fmt.Sprintf("Error on fetching book with id %d", id)))
-	}
-
-	if book.ID == 0 {
-		return c.JSON(http.StatusNotFound, helpers.FailedResponse("Book not found"))
 	}
 
 	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse(fmt.Sprintf("Sucess fetch book with id %d", id), models.BookResponse{
@@ -61,14 +72,14 @@ func GetBookController(c echo.Context) error {
 }
 
 // create new book
-func CreateBookController(c echo.Context) error {
+func (bc *BookController) CreateBookController(c echo.Context) error {
 	var newBook models.Book
 	bindErr := c.Bind(&newBook)
 	if bindErr != nil {
 		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(fmt.Sprintf("Error bind %s", bindErr.Error())))
 	}
 
-	err := repositories.InsertBook(newBook)
+	err := bc.repo.InsertBook(newBook)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("Error insert book"))
 	}
@@ -77,15 +88,18 @@ func CreateBookController(c echo.Context) error {
 }
 
 // delete book by id
-func DeleteBookController(c echo.Context) error {
+func (bc *BookController) DeleteBookController(c echo.Context) error {
 	// your solution here
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("Bad Request: Id invalid"))
 	}
 
-	err = repositories.DeleteBook(uint(id))
+	err = bc.repo.DeleteBook(uint(id))
 	if err != nil {
+		if err.Error() == "Book not found" {
+			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
+		}
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("Delete book failed"))
 	}
 
@@ -93,7 +107,7 @@ func DeleteBookController(c echo.Context) error {
 }
 
 // update book by id
-func UpdateBookController(c echo.Context) error {
+func (bc *BookController) UpdateBookController(c echo.Context) error {
 	// your solution here
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -107,8 +121,11 @@ func UpdateBookController(c echo.Context) error {
 	}
 
 	updateBook.ID = uint(id)
-	err = repositories.UpdateBook(updateBook)
+	err = bc.repo.UpdateBook(updateBook)
 	if err != nil {
+		if err.Error() == "Book not found" {
+			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
+		}
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("Update book failed"))
 	}
 

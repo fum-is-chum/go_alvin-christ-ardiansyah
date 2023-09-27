@@ -1,17 +1,17 @@
-package main
+package utils
 
 import (
 	"restful-api-testing/config"
-	"restful-api-testing/routes"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
-func main() {
+func InitEchoTestAPI() (*echo.Echo, *gorm.DB) {
 	e := echo.New()
 
 	// load config
-	var cfg = config.InitConfig()
+	var cfg = config.InitConfigTest()
 
 	// open mysql connection
 	dbMysql := config.InitMyqlConn(cfg)
@@ -19,9 +19,5 @@ func main() {
 	// migrate db
 	config.Migrate(dbMysql)
 
-	// init routing
-	routes.InitRouter(e, dbMysql)
-	// start the server, and log if it fails
-	e.Logger.Fatal(e.Start(":8000"))
-
+	return e, dbMysql
 }
