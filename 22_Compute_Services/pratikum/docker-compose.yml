@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:8.0.30
+    restart: always
+    container_name: go-mysql
+    environment:
+      MYSQL_DATABASE: "alterra_gorm"
+      MYSQL_ROOT_PASSWORD: "12345678"
+    ports:
+      - "3306:3306"
+    volumes:
+      - data-mysql-golang:/my/own/datadir
+    networks:
+      - go-database
+  web:
+    build: .
+    container_name: go-app
+    ports:
+      - "8000:8000"
+    image: alvinchrist/go-app
+    networks:
+      - go-database
+    depends_on:
+      - db
+volumes:
+  data-mysql-golang:
+
+networks:
+  go-database:
+    driver: bridge
