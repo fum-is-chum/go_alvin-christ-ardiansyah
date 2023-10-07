@@ -14,4 +14,4 @@ COPY --from=builder /app/. .
 EXPOSE 8000
 
 # Wait for MySQL service
-CMD ["./server"]
+CMD ["./server"] 
