@@ -1,0 +1,24 @@
+name: Deploy
+on:
+  push:
+    paths:
+      - '23_CI_CD/pratikum/**'
+      - '.github/workflows/**'
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: pull-test-deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd ~/go_alvin-christ-ardiansyah
+            git pull
+            cd 23_CI_CD/pratikum
+            go test -v ./...
+            docker-compose up --build -d

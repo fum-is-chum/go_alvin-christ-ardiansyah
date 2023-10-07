@@ -20,4 +20,4 @@ ENV NETWORK_NAME=go-database
 EXPOSE 8000
 
 # Wait for MySQL service
-CMD ["./wait-for-it.sh", "db:3306", "--", "./server"]
+CMD ["./wait-for-it.sh", "-t 0", "db:3306", "--", "./server"]
