@@ -1,0 +1,4 @@
+## (24) AI dan Open AI
+1. AI → membuat mesin melakukan tindakan yang memerlukan kecerdasan manusia; sebuah usaha untuk membuat program yang mampu meniru kecerdasan manusia 
+2. AI bisa diimplementasi ke dalam banyak sekali bidang ilmu pengetahuan, antara lain dalam bidang kesehatan (Saran obat yang dipersonalisasi, medical image analysis), bidang marketing (Peramalan grafik penjualan, personalisasi konten), dan sebagainya
+3. Salah satu AI yang sering digunakan sekarang adalah ChatGPT yang dikembangkan oleh OpenAI. OpenAI juga menyediakan playground yang menyediakan parameter-parameter yang bisa dikostumisasi oleh user.
