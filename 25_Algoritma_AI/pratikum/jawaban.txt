@@ -1,7 +1,0 @@
-Menurut saya, kita bisa menggunakan supervised learning bertipe binary classification dikarenakan dalam analisis sentimen,
-bisa menghasilkan 2 output sentimen yaitu "positif', "negatif". Dalam kasus ini, kita memerlukan data pelatihan yang berisi 
-contoh-contoh teks yang sudah diberi label dengan sentimen "positif" atau "negatif". Model yang dilatih menggunakan data ini 
-akan belajar untuk memahami pola dan konteks yang mengindikasikan apakah suatu teks bersifat positif atau negatif.
-
-Namun perlu diperhatikan bahwa ada kemungkinan suatu sentimen juga bisa bersifat "netral", jika jenis sentimen "netral" juga diperlukan
-maka kita bisa menggunakan multi-class classification.
